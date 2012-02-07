@@ -1,0 +1,89 @@
+Issues
+----------------------------------------------------------
+Klasses
+- test classes nested within other modules/classes
+
+Attributes
+- filtering attributes by category (keys, etc.)
+- foreign key determination will depend on relationships
+
+Relationships
+- generalizations (subclassing)
+- ActiveRecord composed_of (aggregation)
+- track association conditions?
+
+Diagrams
+- association classes (joins)
+
+General
+- show module includes?
+
+Done
+- virtual Klasses for polymorphic belongs_to's
+
+
+Options
+----------------------------------------------------------
++ general
+  - messages: verbose, warnings, quiet
++ model
+  - type: auto / active_record / data_mapper / mongoid
++ diagram
+  - type: text / dot / graphviz / yuml / ...
+  - filename
+  - attributes: none/all or content, primary, foreign, ...
+  - details: all or type, default, constraints, ...
+  - relationships: 
+
+
+
+Model Classes
+----------------------------------------------------------
+
+Application
+- name
+- classes
+- relationships
+
+Class
+- name
+- attributes[]
+- abstract?
+
+Attribute
+- name
+- type
+- visibility
+- multiplicity
+- default
+- properties
+- constraints
+- derived?
+- static?
+
+Operation
+- name
+- parameters
+- type
+
+Parameter
+- name
+- type
+
+Relationship
+- source
+- target
+
+Dependency < Relationship
+  
+Association < Relationship
+- name
+- multiplicity
+- through (Class)
+- navigable?
+  
+Aggregation < Association
+
+Composition < Association
+
+Generalization < Relationship
