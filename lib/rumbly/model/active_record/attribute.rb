@@ -4,19 +4,25 @@ module Rumbly
   module Model
     module ActiveRecord
       
+      TIMESTAMPS = [ :created_at, :created_on, :updated_at, :updated_on ]
+      
       # This class is an +ActiveRecord+-specific implementation of the abstract
       # +Rumbly::Model::Attribute+ class use dto represent declared attributes (columns)
       # on model classes in the currently loaded environment.
       class Attribute < Rumbly::Model::Attribute
 
-        # Returns an array of +Rumbly::Model::ActiveRecord::Attribute+ objects, each
-        # of which wraps a field (column) from the given +ActiveRecord+ model class.
-        def self.all_from_klass (klass)
-          klass.cls.columns.map do |column|
-            new(klass, column)
+        class << self
+          
+          # Returns an array of +Rumbly::Model::ActiveRecord::Attribute+ objects, each
+          # of which wraps a field (column) from the given +ActiveRecord+ model class.
+          def all_from_klass (klass)
+            klass.cls.columns.map do |column|
+              new(klass, column)
+            end
           end
-        end
 
+        end
+      
         def initialize (klass, column)
           @klass = klass
           @cls = klass.cls
@@ -82,18 +88,46 @@ module Rumbly
             constraints
           end
         end
+        
+        # Returns true if this +Attribute+ is the primary key for the underlying
+        # +ActiveRecord+ class.
+        def is_primary_key
+          @is_primary_key ||= (@cls.primary_key == name)
+        end
+        
+        # Returns true if this +Attribute+ is a foreign key to some other +ActiveRecord+
+        # model class, i.e. if it is used as the foreign key in any association declared
+        # on this attribute's class.
+        def is_foreign_key
+          @is_foreign_key ||= @cls.reflect_on_all_associations.map(&:foreign_key).include?(name)
+        end
+        
+        # Returns true if this +Attribute+ is used to specify the type of an object
+        # for +ActiveRecord+'s single-table inheritance.
+        def is_type
+          @is_type ||= (@cls.inheritance_column == name)
+        end
+
+        # Returns true if this +Attribute+ is one of the +ActiveRecord+ timestamp fields.
+        def is_timestamp
+          @is_timestamp ||= TIMESTAMPS.include?(name.to_sym)
+        end
 
         # Returns +nil+ since +ActiveRecord+ doesn't declare derived attributes.
-        def derived
+        def is_derived
           nil
         end
 
         # Returns +nil+ since +ActiveRecord+ doesn't declare static (class) attributes.
-        def static
+        def is_static
           nil
         end
         
         private
+        
+        def class_has_foreign_key (cls, name)
+          cls.reflect_on_all_associations.map(&:foreign_key).include?(name)
+        end
         
         def required?
           @cls.validators_on(name).map(&:kind).include?(:presence)
@@ -151,7 +185,6 @@ module Rumbly
         end
         
       end
-      
     end
   end
 end

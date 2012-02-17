@@ -1,6 +1,8 @@
+require 'active_support/core_ext/string/inflections'
 require 'active_record'
 require 'rumbly/model/klass'
 require 'rumbly/model/active_record/attribute'
+require 'rumbly/model/active_record/link'
 
 module Rumbly
   module Model
@@ -18,19 +20,19 @@ module Rumbly
 
           # Returns an array of +Klass+ objects representing +ActiveRecord+ model classes
           # (be they persistent or abstract) in the currently loaded environment.
-          def all_from_base_descendents (app)
+          def all_from_base_descendents (application)
             ::ActiveRecord::Base.descendants.select do
               |cls| class_valid?(cls) 
-            end.map { |cls| new(app, cls) }
+            end.map { |cls| new(application, cls) }
           end
         
           # Returns an array of +Klass+ objects representing "virtual" classes that are
           # named as part of any polymorphic associations. These virtual classes are more
           # like interfaces, but we model them as +Klasses+ for the purposes of showing
           # them in a UML class diagram.
-          def all_from_polymorphic_associations (app)
-            Relationship.associations_matching(app, :belongs_to, :polymorphic).map do |a|
-              new(app, nil, a.name)
+          def all_from_polymorphic_associations (application)
+            Link.associations_matching(application, :belongs_to, :polymorphic).map do |a|
+              new(application, nil, a.name.to_s.classify)
             end
           end
 
@@ -46,8 +48,8 @@ module Rumbly
         # Initializes a new +Klass+ from the given +ActiveModel+ model class. Keeps
         # a back pointer to the top-level +Application+ object. For "virtual" classes
         # (see above), the +cls+ will be nil and the +name+ will be explicitly given.
-        def initialize (app, cls, name=nil)
-          @app = app
+        def initialize (application, cls, name=nil)
+          @application = application
           @cls = cls
           @name = name
         end
@@ -62,6 +64,29 @@ module Rumbly
         # Returns the name of this +Rumbly::Model::ActiveRecord::Klass+.
         def name
           @name ||= @cls.name
+        end
+
+        # Returns the +Klass+ representing the ancenstor of this +ActiveRecord+ class
+        # which is a direct child of +ActiveRecord::Base+. For a virtual +Klass+, just
+        # returns itself.
+        def root
+          @root ||= if self.is_virtual
+            @depth = 0
+            self
+          else
+            s = @cls
+            @depth = -1
+            until s == ::ActiveRecord::Base
+              k, s = s, s.superclass
+              @depth += 1
+            end
+            @application.klass_by_name(k.name)
+          end
+        end
+        
+        def depth
+          self.root
+          @depth
         end
         
         # Returns an array of +Rumbly::Model::ActiveRecord::Attributes+, each of which
@@ -82,18 +107,17 @@ module Rumbly
         end
         
         # Returns +true+ if this +Rumbly::Model::ActiveRecord::Klass+ is abstract.
-        def abstract
-          @abstract ||= (@cls.nil? ? false : @cls.abstract_class?)
+        def is_abstract
+          @is_abstract ||= (@cls.nil? ? false : @cls.abstract_class?)
         end
         
         # Returns +true+ if this +Rumbly::Model::ActiveRecord::Klass+ is a "virtual"
         # class, i.e. one stemming from a polymorphic association (more like an interface).
-        def virtual
-          @virtual ||= @cls.nil?
+        def is_virtual
+          @is_virtual ||= @cls.nil?
         end
         
       end
-      
     end
   end
 end

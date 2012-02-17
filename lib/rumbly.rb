@@ -8,17 +8,23 @@ module Rumbly
   end
 
   # setup default options
-  self.options = OptionsHash.new
+  self.options = o = OptionsHash.new
   
   # general options
-  self.options.messages = :verbose
+  o.messages = :verbose
   
   # model options
-  self.options.model.type = :auto
+  o.model.type        = :auto
   
-  # diagram options
-  self.options.diagram.type   = :graphviz
-  self.options.diagram.file   = 'classes'
-  self.options.diagram.format = :pdf
+  # diagram general options
+  o.diagram.type        = :graphviz
+  o.diagram.file        = 'classes'
+  o.diagram.format      = :pdf
+  
+  # diagram attribute options
+  o.diagram.attribute.types = :content
+  
+  # diagram relationship options
+  o.diagram.relationship.labels = true
 
 end

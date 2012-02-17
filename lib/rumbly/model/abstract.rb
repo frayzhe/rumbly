@@ -19,6 +19,5 @@ module Rumbly
       end
       
     end
-    
   end
 end

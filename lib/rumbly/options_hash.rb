@@ -12,7 +12,7 @@ module Rumbly
     # key is a dotted list of keys, digs down into any nested hashes to find the value.
     # Returns +nil+ if any of the sub-hashes are not present.
     def [] (key)
-      unless key =~ /\./
+      unless key =~ /.\../
         super(key.to_sym)
       else
         k, *r = *split_key(key)
@@ -28,7 +28,7 @@ module Rumbly
     # key is a dotted list of keys, digs down into any nested hashes (creating them if
     # necessary) to store the value.
     def []= (key, value)
-      unless key =~ /\./
+      unless key =~ /.\../
         super(key.to_sym, value)
       else
         k, *r = *split_key(key)
@@ -42,7 +42,7 @@ module Rumbly
     # any nested hashes to find a value. Returns +false+ if any of the sub-hashes or
     # values are nil.
     def has_key? (key)
-      unless key =~ /\./
+      unless key =~ /.\../
         super(key.to_sym)
       else
         k, *r = *split_key(key)

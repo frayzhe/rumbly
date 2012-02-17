@@ -1,6 +1,7 @@
 require 'rumbly/model/application'
 require 'rumbly/model/active_record/klass'
-require 'rumbly/model/active_record/relationship'
+require 'rumbly/model/active_record/link'
+require 'rumbly/model/relationship'
 
 module Rumbly
   module Model
@@ -32,11 +33,11 @@ module Rumbly
         # Returns an array of +Rumbly::Model::ActiveRecord::Relationship+ objects for
         # the currently loaded +ActiveRecord+ environment.
         def relationships
-          @relationships ||= Relationship.all_from_active_record(self)
+          links = Link.all_from_active_record(self)
+          @relationships ||= Relationship.all_from_links(links)
         end
         
       end
-      
     end
   end
 end

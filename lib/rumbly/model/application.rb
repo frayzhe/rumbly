@@ -1,4 +1,5 @@
 require 'active_support/core_ext/string/inflections'
+require 'rumbly/base'
 require 'rumbly/model/abstract'
 
 module Rumbly
@@ -14,6 +15,9 @@ module Rumbly
       
       # Attributes and default values of an Application
       ATTRIBUTES = { name: '', klasses: [], relationships: [] }
+      
+      # Include some useful common methods
+      include ::Rumbly::Base
 
       # For each attribute, create stub accessor methods that raise an exception
       extend Abstract
@@ -66,6 +70,5 @@ module Rumbly
       end
 
     end
-    
   end
 end

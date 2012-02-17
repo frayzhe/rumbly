@@ -2,7 +2,7 @@ module Rumbly
   module Model
     module Simple
     
-      classes = %w{ application klass attribute operation parameter relationship }
+      classes = %w{ application klass attribute operation parameter relationship link }
       classes.each { |c| require "rumbly/model/#{c}" }
 
       def self.define_class(classname)

@@ -1,0 +1,19 @@
+=== 0.2.0
+
+* added :root attribute to Model::Klass for generalizations
+* added new Model::Link class to track one-way links
+* eliminated abstract Model::Relationship class (now generic)
+* created :description methods (debug) separate from :label
+* simplified Rumbly::Diagram::Base interface
+* added attribute filtering based on type (primary key, etc.)
+* dropped use of delegation in Graphviz diagrammer
+* added Rumbly::Base module to share methods
+* fixed minor bugs in OptionsHash
+* cleaned up model, diagram options
+* added simple README, license, this change log
+
+
+=== 0.1.0
+
+* Released Feburary 6, 2010
+* First public release.

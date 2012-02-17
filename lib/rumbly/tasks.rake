@@ -13,7 +13,7 @@ namespace :rumbly do
   task :options do
     ENV.each do |key, value|
       # if option exists in defaults, do some basic conversions and override
-      key.downcase.gsub(/_/,'.')
+      key = key.downcase.gsub(/_/,'.')
       if Rumbly::options.has_key?(key)
         value = case value
         when "true", "yes" then true
